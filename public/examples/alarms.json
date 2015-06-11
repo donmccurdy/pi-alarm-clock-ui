@@ -1,0 +1,8 @@
+[
+	{
+		"name": "My Alarm",
+		"time": "07:30:00",
+		"date": null,
+		"repeat": ["Su", "M", "Tu", "W", "Th", "F", "Sa"]
+	}
+]
