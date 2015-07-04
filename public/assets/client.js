@@ -18,7 +18,7 @@
 	};
 
 	AlarmsView.prototype.render = function () {
-		this.element.innerText = JSON.stringify(this.alarms, null, 2);
+		// this.element.innerText = JSON.stringify(this.alarms, null, 2);
 	};
 
 	AlarmsView.prototype.status = function () {
