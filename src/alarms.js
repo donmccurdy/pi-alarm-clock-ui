@@ -1,23 +1,25 @@
 var _ = require('lodash');
 
-var Alarms = function () {};
+var Alarms = function () {
+	this.alarms = [];
+};
 
 _.merge(Alarms.prototype, {
 
 	list: function () {
-		return [];
+		return this.alarms;
 	},
 
 	create: function (alarm) {
-
+		this.alarms.push(alarm);
 	},
 
 	update: function (id, alarm) {
-
+		// TODO
 	},
 
 	remove: function (id) {
-
+		// TODO
 	}
 
 });

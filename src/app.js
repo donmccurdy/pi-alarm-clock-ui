@@ -1,4 +1,4 @@
-var koa = require('koa'),
+var koa = require('koala'),
 	serve = require('koa-static'),
 	router = require('koa-route'),
 	routes = require('./routes'),
@@ -12,4 +12,4 @@ app
 	.use(router.del('/alarms', routes.del))
 ;
 
-app.listen(app.env.PORT || 3000);
+app.listen(app.env.PORT);
