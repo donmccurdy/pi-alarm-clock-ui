@@ -5,19 +5,12 @@ module.exports = function (grunt) {
 			dev: {
 				script: 'src/app.js',
 				options: {
-					nodeArgs: [
-						'--harmony'
-					],
-					env: {
-						PORT: 3000
-					},
+					nodeArgs: ['--harmony'],
+					env: {PORT: 3000},
+					watch: ['src'],
 					ignore: [
 						'node_modules/**',
 						'bower_components/**'
-					],
-					watch: [
-						'src',
-						'public'
 					]
 				}
 			}
