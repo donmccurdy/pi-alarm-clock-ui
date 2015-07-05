@@ -11,6 +11,7 @@ _.merge(Alarms.prototype, {
 	},
 
 	create: function (alarm) {
+		alarm.id = _.uniqueId();
 		this.alarms.push(alarm);
 	},
 
