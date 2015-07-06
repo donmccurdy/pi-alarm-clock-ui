@@ -5,14 +5,13 @@
 			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		},
-		TEMPLATE = _.template(''
+		TEMPLATE = ''
 			+ '{{ _.each(alarms, function (alarm) { }}'
 			+	'<li class="alarm" data-id="{{= alarm.id }}">'
 			+		'<span class="alarm-label">{{- alarm.time }}</span>'
 			+		'<span class="alarm-remove">&times;</span>'
 			+	'</li>'
 			+ '{{ }) }}'
-		)
 	;
 
 	/* TODO - temporary
@@ -26,12 +25,13 @@
 		this.alarms = alarms;
 		this.routes = routes;
 		this.element = document.querySelector(SELECTOR);
+		this.template = _.template(TEMPLATE);
 		this.bindAll();
 		this.render();
 	};
 
 	AlarmsView.prototype.render = function () {
-		this.element.innerHTML = TEMPLATE({alarms: this.alarms});
+		this.element.innerHTML = this.template({alarms: this.alarms});
 	};
 
 	AlarmsView.prototype.status = function () {

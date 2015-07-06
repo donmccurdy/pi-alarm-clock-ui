@@ -9,6 +9,14 @@
 		UPDATE: '/alarms'
 	};
 
+	/* Lodash Configuration
+	*****************************************/
+	_.templateSettings = {
+		evaluate:		/\{\{(.+?)\}\}/g,
+		interpolate:	/\{\{=(.+?)\}\}/g,
+		escape:			/\{\{-(.+?)\}\}/g
+	};
+
 	/* Bootstrap
 	*****************************************/
 	fetch(ROUTES.GET)
