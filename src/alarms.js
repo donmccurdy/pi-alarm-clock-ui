@@ -1,28 +1,109 @@
-var _ = require('lodash');
+var _ = require('lodash'),
+	sqlite3 = require('sqlite3');
 
-var Alarms = function () {
-	this.alarms = [];
+var SQL_INSERT = ''
+	+ 'INSERT INTO alarms (hours, minutes, days) '
+	+ 'VALUES ($hours, $minutes, $days)',
+	SQL_SELECT = 'SELECT * FROM alarms',
+	SQL_SELECT_ONE = 'SELECT * FROM alarms WHERE id = $id',
+	SQL_DELETE = 'DELETE FROM alarms WHERE id = $id'
+;
+
+
+var Alarms = function (file) {
+	this.db = new sqlite3.Database(file, sqlite3.OPEN_READWRITE);
 };
 
 _.merge(Alarms.prototype, {
 
-	list: function () {
-		return this.alarms;
+	/**
+	 * Yields a list of the user's alarms.
+	 *
+	 * @yield {array<Alarm>}
+	 */
+	list: function *() {
+		return new Promise(function (resolve, reject) {
+			this.db.all(SQL_SELECT, function (err, rows) {
+				console.log('RESOLVED: ' + JSON.stringify(rows));
+				if (err) reject({message: 'Could not retrieve alarms'});
+				else resolve(rows);
+			});
+		}.bind(this));
 	},
 
-	create: function (alarm) {
-		alarm.id = _.uniqueId();
-		this.alarms.push(alarm);
+	/**
+	 * Create a new alarm. Yields the created alarm, if successful.
+	 *
+	 * @param {Alarm} alarm
+	 * @yield {Alarm}
+	 */
+	create: function *(alarm) {
+		var self = this;
+		return new Promise(function (resolve, reject) {
+			self.db.serialize(function () {
+				var id = 0;
+				self.db.run(SQL_INSERT, {
+						$hours: alarm.hours,
+						$minutes: alarm.minutes,
+						$days: JSON.stringify(alarm.days)
+					}, function (error) {
+						if (error) {
+							reject({message: 'Could not create alarm.'});
+						} else {
+							id = this.lastID;
+						}
+					}
+				);
+
+				self.db.get(SQL_SELECT_ONE, {$id: id},
+					function (error, alarm) {
+						if (error) {
+							reject({message: 'Could not retrieve new alarm.'});
+						} else {
+							resolve(alarm);
+						}
+					}
+				);
+			});
+		});
 	},
 
-	update: function (id, alarm) {
-		// TODO
+	/**
+	 * Apply updates to specified alarm. Yields the alarm, if successful.
+	 *
+	 * @param  {Alarm} alarm
+	 * @yield {Alarm}
+	 */
+	update: function *(alarm) {
+		return new Promise(function (resolve, reject) {
+			reject({message: 'Not implemented'});
+		}.bind(this));
 	},
 
-	remove: function (id) {
-		// TODO
+	/**
+	 * Remove the specified alarm.
+	 *
+	 * @param {int} id
+	 * @yield {boolean}
+	 */
+	remove: function *(id) {
+		return new Promise(function (resolve, reject) {
+			this.db.run(SQL_DELETE, {$id: id}, function (error) {
+				if (error) {
+					reject({message: 'Alarm could not be deleted.'});
+				} else {
+					resolve(true);
+				}
+			});
+		}.bind(this));
+	},
+
+	/**
+	 * Closes DB connections in preparation for the destruction of the object.
+	 */
+	destroy: function () {
+		this.db.close();
 	}
-
 });
 
 module.exports = Alarms;
