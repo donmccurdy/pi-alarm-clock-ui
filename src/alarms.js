@@ -23,10 +23,12 @@ _.merge(Alarms.prototype, {
 	 */
 	list: function *() {
 		return new Promise(function (resolve, reject) {
-			this.db.all(SQL_SELECT, function (err, rows) {
-				console.log('RESOLVED: ' + JSON.stringify(rows));
-				if (err) reject({message: 'Could not retrieve alarms'});
-				else resolve(rows);
+			this.db.all(SQL_SELECT, function (error, rows) {
+				if (error) {
+					reject({message: 'Could not retrieve alarms.'});
+				} else {
+					resolve(rows);
+				}
 			});
 		}.bind(this));
 	},
@@ -76,7 +78,7 @@ _.merge(Alarms.prototype, {
 	 */
 	update: function *(alarm) {
 		return new Promise(function (resolve, reject) {
-			reject({message: 'Not implemented'});
+			reject({message: 'Not implemented.'});
 		}.bind(this));
 	},
 
