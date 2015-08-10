@@ -8,22 +8,17 @@
 		<link rel="stylesheet" href="assets/reset.css">
 		<link rel="stylesheet" href="assets/core.css">
 		<link rel="manifest" href="assets/manifest.json">
+		<link rel="shortcut icon" href="assets/favicon.png">
 	</head>
 	<body>
 		<header>
-			<h1>
-				<a href="/" class="brand-logo">Pi Alarm</a>
-			</h1>
+			<h1>Pi Alarm</h1>
 		</header>
-		<div class="container">
-			<div class="form-wrapper">
-				<input type="time" class="time" step="900">
-			</div>
-			<div class="switch-wrapper">
-				<div class="switch" data-enabled="false"></div>
-			</div>
-			<ul class="alarms"></ul>
-		</div>
+
+		<input type="time" step="900" data-source="time">
+		<button data-action="create">Create</button>
+		<ul data-view="alarms"></ul>
+
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js"></script>
 		<script src="assets/AlarmsView.js"></script>
 		<script src="assets/bootstrap.js"></script>

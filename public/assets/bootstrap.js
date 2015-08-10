@@ -19,8 +19,6 @@
 
 	/* Bootstrap
 	*****************************************/
-	fetch(ROUTES.GET)
-		.then(function (response) { return response.json(); })
-		.then(function (alarms) { return new AlarmsView(alarms, ROUTES); });
+	window.alarmsView = new AlarmsView(document.body, ROUTES);
 
 }(window.fetch, window.AlarmsView));

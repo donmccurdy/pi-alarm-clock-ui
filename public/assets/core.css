@@ -1,86 +1,25 @@
 /**
  * Pi Alarm Clock UI
  *
- * @author Don McCurdy
+ * @author Don McCurdy <dm@donmccurdy.com>
  *
  * MIT Open Source License, 2015.
  */
 
 /*
-	$COLOR_DARK_1: #8C4646;
-	$COLOR_DARK_2: #D96459;
-	$COLOR_BASE: #F2E394;
-	$COLOR_ACCENT_1: #F2AE72;
-	$COLOR_ACCENT_2: #588C7E;
-	$COLOR_BLACK: #4D4D4D;
-	$COLOR_WHITE: #F0F0F0;
+ * $COLOR_DARK_1: #8C4646;
+ * $COLOR_DARK_2: #D96459;
+ * $COLOR_BASE: #F2E394;
+ * $COLOR_ACCENT_1: #F2AE72;
+ * $COLOR_ACCENT_2: #588C7E;
+ * $COLOR_BLACK: #4D4D4D;
+ * $COLOR_WHITE: #F0F0F0;
  */
 
+/* Base styles
+**********************************/
+
 body {
-	font-family: "DIN-Light";
 	font-size: 24px;
-	background: #D96459;
-}
-
-/* Header
-**********************************/
-
-header {
-	width: 100%;
-	text-align: center;
-	height: 3em;
-	line-height: 3.2em;
-
-	background: #8C4646;
-	color: #F0F0F0;
-	text-shadow: 1px 1px 0 #4D4D4D;
-
-	box-shadow:	0 1px 2px rgba(0,0,0,0.5),
-				0 0 1px rgba(0,0,0,0.15) inset;
-}
-
-h1 {
-	font-size: 1.8em;
-	display: inline-block;
-}
-
-/* Alarms
-**********************************/
-
-.container {
-	height: calc(100% - 3em);
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	padding: 1em;
-	text-align: center;
-}
-
-.form-wrapper,
-.switch-wrapper {
-	margin: 1em auto;
-}
-
-.time {
-	font: inherit;
-	font-size: 3em;
-	border-radius: .1rem;
-	border: none;
-}
-
-.switch {
-	width: 10rem;
-	background: #8C4646;
-	height: 4rem;
-
-	border-radius: .1rem;
-	box-shadow:	.2rem .2rem .5rem rgba(0, 0, 0, 0.15),
-				0 0 1rem rgba(0, 0, 0, 0.1) inset;
-}
-.switch:hover {
-	box-shadow:	.2rem .4rem 1.5rem rgba(0, 0, 0, 0.15),
-				0 0 1rem rgba(0, 0, 0, 0.1) inset;
-}
-.switch:active {
-	box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1) inset;
+	padding: 2em;
 }

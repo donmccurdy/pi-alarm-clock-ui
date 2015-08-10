@@ -5,6 +5,8 @@ var koa = require('koala'),
 	app = koa()
 ;
 
+require('dotenv').load();
+
 app
 	.use(serve('./public'))
 	.use(router.get('/alarms', routes.list))
