@@ -1,11 +1,11 @@
+require('dotenv').load();
+
 var koa = require('koala'),
 	serve = require('koa-static'),
 	router = require('koa-route'),
 	routes = require('./routes'),
 	app = koa()
 ;
-
-require('dotenv').load();
 
 app
 	.use(serve('./public'))
