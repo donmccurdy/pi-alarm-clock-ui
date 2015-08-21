@@ -46,13 +46,25 @@
 	};
 
 	AlarmsView.prototype.create = function () {
-		var input = this.element.querySelector('[data-source=time]'),
-			time = input.value.split(':'),
-			alarm = {
-				hours: time[0],
-				minutes: time[1],
-				days: [0,1,2,3,4,5,6]
-			};
+		var alarm,
+			time = this.element.querySelector('[data-source=time]')
+				.value
+				.split(':'),
+			days = _(this.element.querySelectorAll('[data-source=days]'))
+				.filter('checked')
+				.pluck('value')
+				.map(Number)
+				.value();
+
+		if (time.length !== 2) {
+			throw 'Time is required.';
+		}
+
+		alarm = {
+			hours: +time[0],
+			minutes: +time[1],
+			days: days
+		};
 
 		return fetch(this.routes.PUT, {
 				method: 'PUT',

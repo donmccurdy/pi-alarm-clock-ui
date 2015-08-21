@@ -40,6 +40,7 @@ _.merge(Alarms.prototype, {
 	 * @yield {Alarm}
 	 */
 	create: function *(alarm) {
+		this.validate(alarm);
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			self.db.serialize(function () {
@@ -77,6 +78,7 @@ _.merge(Alarms.prototype, {
 	 * @yield {Alarm}
 	 */
 	update: function *(alarm) {
+		this.validate(alarm);
 		return new Promise(function (resolve, reject) {
 			reject({message: 'Not implemented.'});
 		}.bind(this));
@@ -98,6 +100,16 @@ _.merge(Alarms.prototype, {
 				}
 			});
 		}.bind(this));
+	},
+
+	validate: function (alarm) {
+		if (!_.isNumber(alarm.hours)) {
+			throw {message: 'Integer hours required.'};
+		} else if (!_.isNumber(alarm.minutes)) {
+			throw {message: 'Integer minutes required.'};
+		} else if (!_.isArray(alarm.days) || !_.all(alarm.days, _.isNumber)) {
+			throw {message: 'List of integer days required'};
+		}
 	},
 
 	/**
