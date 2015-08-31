@@ -1,0 +1,45 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="alarm-view">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<span class="alarm-label">
+			<span>{{ options.hours }}</span>:<span>{{ options.minutes }}</span>
+			<span>{{ options.days }}</span>
+		</span>
+		<button on-click='_edit'>Edit</button>
+		<button on-click='_remove'>Remove</button>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: 'alarm-view',
+		properties: {
+			alarmId: Number,
+			hours: Number,
+			minutes: Number,
+			days: Array,
+			options: {
+				type: Object,
+				value: {}
+			}
+		},
+		ready: function () {
+			this.alarmId = this.options.id;
+			this.hours = this.options.hours;
+			this.minutes = this.options.minutes;
+			this.days = this.options.days;
+		},
+		_edit: function () {
+			this.fire('edit', this.alarmId);
+		},
+		_remove: function () {
+			this.fire('remove', this.alarmId);
+		}
+	});
+</script>

@@ -1,0 +1,85 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="alarm-form.html">
+<link rel="import" href="alarm-view.html">
+
+<dom-module id="alarm-list">
+	<template>
+		<style>
+		</style>
+		<template is="dom-if" if="{{ isEditing }}">
+			<alarm-form alarm-id="{{ editId }}"
+				resource-url="{{ resourceUrl }}">
+			</alarm-form>
+		</template>
+		<button on-click="_create">Create</button>
+		<template is="dom-repeat" items="{{alarms}}" sort="timeRemaining">
+			<alarm-view options="{{ item }}"></alarm-view>
+		</template>
+		<iron-ajax
+			auto
+			url="{{ resourceUrl }}"
+			handle-as="json"
+			on-response="_load"
+			debounce-duration="300"></iron-ajax>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: 'alarm-list',
+
+		properties: {
+			isEditing: Boolean,
+			idEditing: 0,
+			alarms: {
+				type: Array,
+				value: []
+			}
+		},
+
+		_load: function (request) {
+			this.set('alarms', request.detail.response);
+		},
+
+		_create: function () {
+			this.idEditing = 0;
+			this.isEditing = true;
+			console.log('Create!');
+		},
+		
+		listeners: {
+			'save': 'onFormClose',
+			'close': 'onFormClose',
+			'edit': 'onEdit',
+			'remove': 'onRemove'
+		},
+
+		onFormClose: function () {
+			this.isEditing = false;
+			this.idEditing = 0;
+		},
+
+		onEdit: function (e) {
+			this.idEditing = e.target.get('alarmId');
+			this.isEditing = true;
+		},
+
+		onRemove: function (e) {
+			fetch(this.resourceUrl, {
+				method: 'DELETE',
+				headers: this.resourceHeaders,
+				body: JSON.stringify({id: e.target.get('alarmId')})
+			})
+			.then(function () { e.target.remove(); })
+			.catch(console.error.bind(console))
+			;
+		},
+
+		// Utility
+
+		timeRemaining: function (a, b) {
+			return a.hours > b.hours ? 1 : -1;
+		}
+	});
+</script>

@@ -1,0 +1,111 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-input/iron-input.html">
+<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="alarm-form">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		<input is="iron-input" type="time" step="900" value="{{ time::input }}">
+		<div class="paper-checkbox-group">
+			<paper-checkbox value="0" checked?="{{ containsDay(days.*, 0) }}" on-change="_change">Monday</paper-checkbox>
+			<paper-checkbox value="1" checked?="{{ containsDay(days.*, 1) }}" on-change="_change">Tuesday</paper-checkbox>
+			<paper-checkbox value="2" checked?="{{ containsDay(days.*, 2) }}" on-change="_change">Wednesday</paper-checkbox>
+			<paper-checkbox value="3" checked?="{{ containsDay(days.*, 3) }}" on-change="_change">Thursday</paper-checkbox>
+			<paper-checkbox value="4" checked$="{{ containsDay(days.*, 4) }}" on-change="_change">Friday</paper-checkbox>
+			<paper-checkbox value="5" checked$="{{ containsDay(days.*, 5) }}" on-change="_change">Saturday</paper-checkbox>
+			<paper-checkbox value="6" checked$="{{ containsDay(days.*, 6) }}" on-change="_change">Sunday</paper-checkbox>
+		</div>
+		<button on-click="_submit">Save</button>
+		<button on-click="_cancel">Cancel</button>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: 'alarm-form',
+
+		properties: {
+			resourceUrl: String,
+			resourceHeaders: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			alarmId: 0,
+			hours: 0,
+			minutes: 0,
+			days: []
+		},
+
+		ready: function () {
+			if (this.alarmId) {
+				fetch(this.resourceUrl, {
+					method: 'GET',
+					headers: this.resourceHeaders,
+					body: JSON.stringify({id: this.alarmId})
+				})
+				.then(function (response) { return response.json() })
+				.then(function (alarm) {
+					this.set('hours', alarm.hours);
+					this.set('minutes', alarm.minutes);
+					this.set('time', alarm.hours + ':' + alarm.minutes);
+					this.set('days', alarm.days);
+				}.bind(this))
+				.catch(console.error.bind(console))
+				;
+			}
+			console.log('Form ready!');
+		},
+
+		getData: function () {
+			return {
+				id: this.alarmId,
+				hours: this.hours,
+				minutes: this.minutes,
+				days: this.days
+			};
+		},
+
+		_submit: function () {
+			fetch(this.resourceUrl, {
+				method: 'PUT',
+				headers: this.resourceHeaders,
+				body: JSON.stringify(this.getData())
+			})
+			.then(function (response) { return response.json(); })
+			.then(this.fire.bind(this, 'close'))
+			.catch(console.error.bind(console))
+			;
+			console.log('Submit!');
+		},
+
+		_cancel: function () {
+			this.fire('close');
+		},
+
+		listener: {
+			'change': '_change',
+			'iron-change': '_change'
+		},
+
+		_change: function () {
+			if (this.time) {
+				this.hours = +this.time.split(':')[0];
+				this.minutes = +this.time.split(':')[1];
+			}
+			var days = [],
+				checkboxes = this.querySelectorAll('paper-checkbox[checked]');
+			for (var i = 0; i < checkboxes.length; i++) {
+				days[i] = +checkboxes[i].value;
+			}
+			this.days = days;
+		},
+
+		containsDay: function (change, index) {
+			return this.days.indexOf(index) >= 0;
+		}
+	});
+</script>

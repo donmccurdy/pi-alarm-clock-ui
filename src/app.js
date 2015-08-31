@@ -9,6 +9,7 @@ var koa = require('koala'),
 
 app
 	.use(serve('./public'))
+	.use(serve('./bower_components'))
 	.use(router.get('/alarms', routes.list))
 	.use(router.put('/alarms', routes.put))
 	.use(router.del('/alarms', routes.del))
