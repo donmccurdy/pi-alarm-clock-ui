@@ -8,8 +8,8 @@
 			}
 		</style>
 		<span class="alarm-label">
-			<span>{{ options.hours }}</span>:<span>{{ options.minutes }}</span>
-			<span>{{ options.days }}</span>
+			<span>{{ hours }}</span>:<span>{{ minutes }}</span>
+			<span>{{ days }}</span>
 		</span>
 		<button on-click='_edit'>Edit</button>
 		<button on-click='_remove'>Remove</button>
@@ -23,23 +23,19 @@
 			alarmId: Number,
 			hours: Number,
 			minutes: Number,
-			days: Array,
-			options: {
-				type: Object,
-				value: {}
-			}
-		},
-		ready: function () {
-			this.alarmId = this.options.id;
-			this.hours = this.options.hours;
-			this.minutes = this.options.minutes;
-			this.days = this.options.days;
+			days: Array
 		},
 		_edit: function () {
 			this.fire('edit', this.alarmId);
 		},
 		_remove: function () {
-			this.fire('remove', this.alarmId);
+			fetch(this.getPath(), {method: 'DELETE'})
+				.then(this.fire.bind(this, 'remove'))
+				.catch(console.error.bind(console))
+			;
+		},
+		getPath: function () {
+			return this.resourceUrl + '/' + this.alarmId;
 		}
 	});
 </script>

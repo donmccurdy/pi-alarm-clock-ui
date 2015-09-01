@@ -14,7 +14,14 @@
 		</template>
 		<button on-click="_create">Create</button>
 		<template is="dom-repeat" items="{{alarms}}" sort="timeRemaining">
-			<alarm-view options="{{ item }}"></alarm-view>
+			<alarm-view 
+				alarm-id="{{ item.id }}"
+				hours="{{ item.hours }}"
+				minutes="{{ item.minutes }}"
+				days="{{ item.days }}"
+				resource-url="{{ resourceUrl }}">
+			</alarm-view>
+
 		</template>
 		<iron-ajax
 			auto
@@ -51,7 +58,7 @@
 			'save': 'onFormClose',
 			'close': 'onFormClose',
 			'edit': 'onEdit',
-			'remove': 'onRemove'
+			'remove': 'refresh'
 		},
 
 		onFormClose: function () {
@@ -63,17 +70,6 @@
 		onEdit: function (e) {
 			this.idEditing = e.target.get('alarmId');
 			this.isEditing = true;
-		},
-
-		onRemove: function (e) {
-			var id = e.target.get('alarmId');
-			fetch(this.resourceUrl + '/' + id, {
-				method: 'DELETE',
-				headers: this.resourceHeaders
-			})
-			.then(this.refresh.bind(this))
-			.catch(console.error.bind(console))
-			;
 		},
 
 		// Utility

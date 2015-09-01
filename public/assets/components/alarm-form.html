@@ -29,10 +29,6 @@
 
 		properties: {
 			resourceUrl: String,
-			resourceHeaders: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
 			alarmId: 0,
 			time: '',
 			hours: 0,
@@ -43,10 +39,7 @@
 
 		ready: function () {
 			if (this.alarmId) {
-				fetch(this.getPath(), {
-					method: 'GET',
-					headers: this.resourceHeaders
-				})
+				fetch(this.getPath())
 				.then(function (response) { return response.json() })
 				.then(function (alarm) {
 					this.set('hours', alarm.hours);
@@ -71,7 +64,6 @@
 		_submit: function () {
 			fetch(this.getPath(), {
 				method: 'POST',
-				headers: this.resourceHeaders,
 				body: JSON.stringify(this.getData())
 			})
 			.then(this.fire.bind(this, 'close'))
