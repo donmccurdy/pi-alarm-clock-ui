@@ -9,15 +9,15 @@
 				display: block;
 			}
 		</style>
-		<input is="iron-input" type="time" step="900" value="{{ time::input }}">
+		<input is="iron-input" type="time" step="900" value="{{ time::input }}" on-change="_change">
 		<div class="paper-checkbox-group">
-			<paper-checkbox value="0" checked?="{{ containsDay(days.*, 0) }}" on-change="_change">Monday</paper-checkbox>
-			<paper-checkbox value="1" checked?="{{ containsDay(days.*, 1) }}" on-change="_change">Tuesday</paper-checkbox>
-			<paper-checkbox value="2" checked?="{{ containsDay(days.*, 2) }}" on-change="_change">Wednesday</paper-checkbox>
-			<paper-checkbox value="3" checked?="{{ containsDay(days.*, 3) }}" on-change="_change">Thursday</paper-checkbox>
-			<paper-checkbox value="4" checked$="{{ containsDay(days.*, 4) }}" on-change="_change">Friday</paper-checkbox>
-			<paper-checkbox value="5" checked$="{{ containsDay(days.*, 5) }}" on-change="_change">Saturday</paper-checkbox>
-			<paper-checkbox value="6" checked$="{{ containsDay(days.*, 6) }}" on-change="_change">Sunday</paper-checkbox>
+			<label><input type="checkbox" value="0" checked?="{{ containsDay(days.*, 0) }}" on-change="_change">Monday</label>
+			<label><input type="checkbox" value="1" checked?="{{ containsDay(days.*, 1) }}" on-change="_change">Tuesday</label>
+			<label><input type="checkbox" value="2" checked?="{{ containsDay(days.*, 2) }}" on-change="_change">Wednesday</label>
+			<label><input type="checkbox" value="3" checked?="{{ containsDay(days.*, 3) }}" on-change="_change">Thursday</label>
+			<label><input type="checkbox" value="4" checked$="{{ containsDay(days.*, 4) }}" on-change="_change">Friday</label>
+			<label><input type="checkbox" value="5" checked$="{{ containsDay(days.*, 5) }}" on-change="_change">Saturday</label>
+			<label><input type="checkbox" value="6" checked$="{{ containsDay(days.*, 6) }}" on-change="_change">Sunday</label>
 		</div>
 		<button on-click="_submit">Save</button>
 		<button on-click="_cancel">Cancel</button>
@@ -35,12 +35,15 @@
 				'Content-Type': 'application/json'
 			},
 			alarmId: 0,
+			time: '',
 			hours: 0,
 			minutes: 0,
-			days: []
+			days: [],
+			valid: false
 		},
 
 		ready: function () {
+			this.reset();
 			if (this.alarmId) {
 				fetch(this.resourceUrl, {
 					method: 'GET',
@@ -57,7 +60,6 @@
 				.catch(console.error.bind(console))
 				;
 			}
-			console.log('Form ready!');
 		},
 
 		getData: function () {
@@ -69,17 +71,23 @@
 			};
 		},
 
+		reset: function () {
+			this.set('alarmId', 0);
+			this.set('hours', 0);
+			this.set('minutes', 0);
+			this.set('time', '');
+			this.set('days', []);
+		},
+
 		_submit: function () {
 			fetch(this.resourceUrl, {
 				method: 'PUT',
 				headers: this.resourceHeaders,
 				body: JSON.stringify(this.getData())
 			})
-			.then(function (response) { return response.json(); })
 			.then(this.fire.bind(this, 'close'))
 			.catch(console.error.bind(console))
 			;
-			console.log('Submit!');
 		},
 
 		_cancel: function () {
@@ -87,8 +95,7 @@
 		},
 
 		listener: {
-			'change': '_change',
-			'iron-change': '_change'
+			'change': '_change'
 		},
 
 		_change: function () {
@@ -97,9 +104,11 @@
 				this.minutes = +this.time.split(':')[1];
 			}
 			var days = [],
-				checkboxes = this.querySelectorAll('paper-checkbox[checked]');
+				checkboxes = this.querySelectorAll('input[type=checkbox]');
 			for (var i = 0; i < checkboxes.length; i++) {
-				days[i] = +checkboxes[i].value;
+				if (checkboxes[i].checked) {
+					days.push(+checkboxes[i].value);
+				}
 			}
 			this.days = days;
 		},

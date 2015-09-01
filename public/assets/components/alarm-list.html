@@ -45,7 +45,6 @@
 		_create: function () {
 			this.idEditing = 0;
 			this.isEditing = true;
-			console.log('Create!');
 		},
 		
 		listeners: {
@@ -56,6 +55,7 @@
 		},
 
 		onFormClose: function () {
+			this.querySelector('iron-ajax').generateRequest();
 			this.isEditing = false;
 			this.idEditing = 0;
 		},
