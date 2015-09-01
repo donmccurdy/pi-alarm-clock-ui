@@ -14,10 +14,19 @@ _.merge(module.exports, {
 		}
 	},
 
-	put: function *() {
+	find: function *() {
+		try {
+			this.body = yield alarms.find(this.params.id);
+		} catch (e) {
+			this.body = e;
+			this.status = 500;
+		}
+	},
+
+	post: function *() {
 		try {
 			var alarm = yield this.request.json();
-			if (alarm.id) {
+			if (this.params.id) {
 				this.body = yield alarms.update(alarm);
 			} else {
 				this.body = yield alarms.create(alarm);
@@ -30,8 +39,7 @@ _.merge(module.exports, {
 
 	del: function *() {
 		try {
-			var options = yield this.request.json();
-			this.body = yield alarms.remove(options.id);
+			this.body = yield alarms.remove(this.params.id);
 		} catch (e) {
 			this.body = e;
 			this.status = 500;

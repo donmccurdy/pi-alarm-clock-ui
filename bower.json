@@ -28,7 +28,6 @@
     "lodash": "~3.9.3",
     "polymer": "Polymer/polymer#^1.0.0",
     "iron-ajax": "PolymerElements/iron-ajax#~1.0.4",
-    "iron-input": "PolymerElements/iron-input#~1.0.5",
-    "paper-checkbox": "PolymerElements/paper-checkbox#~1.0.8"
+    "iron-input": "PolymerElements/iron-input#~1.0.5"
   }
 }

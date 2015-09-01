@@ -4,6 +4,10 @@ var _ = require('lodash'),
 var SQL_INSERT = ''
 	+ 'INSERT INTO alarms (hours, minutes, days) '
 	+ 'VALUES ($hours, $minutes, $days)',
+	SQL_UPDATE = ''
+	+ 'UPDATE alarms '
+	+ 'SET hours=$hours, minutes=$minutes, days=$days '
+	+ 'WHERE id=$id',
 	SQL_SELECT = 'SELECT * FROM alarms',
 	SQL_SELECT_ONE = 'SELECT * FROM alarms WHERE id = $id',
 	SQL_DELETE = 'DELETE FROM alarms WHERE id = $id'
@@ -22,15 +26,31 @@ _.merge(Alarms.prototype, {
 	 * @yield {array<Alarm>}
 	 */
 	list: function *() {
+		var self = this;
 		return new Promise(function (resolve, reject) {
-			this.db.all(SQL_SELECT, function (error, rows) {
+			self.db.all(SQL_SELECT, function (error, rows) {
 				if (error) {
 					reject({message: 'Could not retrieve alarms.'});
 				} else {
-					resolve(rows);
+					resolve(rows.map(self.unzip));
 				}
 			});
-		}.bind(this));
+		});
+	},
+
+	find: function *(id) {
+		var self = this;
+		return new Promise(function (resolve, reject) {
+			self.db.get(SQL_SELECT_ONE, {$id: id},
+				function (error, alarm) {
+					if (error) {
+						reject({message: 'Could not retrieve new alarm.'});
+					} else {
+						resolve(self.unzip(alarm));
+					}
+				}
+			);
+		});
 	},
 
 	/**
@@ -41,34 +61,21 @@ _.merge(Alarms.prototype, {
 	 */
 	create: function *(alarm) {
 		this.validate(alarm);
-		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.db.serialize(function () {
-				var id = 0;
-				self.db.run(SQL_INSERT, {
-						$hours: alarm.hours,
-						$minutes: alarm.minutes,
-						$days: JSON.stringify(alarm.days)
-					}, function (error) {
-						if (error) {
-							reject({message: 'Could not create alarm.'});
-						} else {
-							id = this.lastID;
-						}
+			this.db.run(SQL_INSERT, {
+					$hours: alarm.hours,
+					$minutes: alarm.minutes,
+					$days: JSON.stringify(alarm.days)
+				}, function (error) {
+					if (error) {
+						reject({message: 'Could not create alarm.'});
+					} else {
+						alarm.id = this.lastID;
+						resolve(alarm);
 					}
-				);
-
-				self.db.get(SQL_SELECT_ONE, {$id: id},
-					function (error, alarm) {
-						if (error) {
-							reject({message: 'Could not retrieve new alarm.'});
-						} else {
-							resolve(alarm);
-						}
-					}
-				);
-			});
-		});
+				}
+			);
+		}.bind(this));
 	},
 
 	/**
@@ -80,7 +87,18 @@ _.merge(Alarms.prototype, {
 	update: function *(alarm) {
 		this.validate(alarm);
 		return new Promise(function (resolve, reject) {
-			reject({message: 'Not implemented.'});
+			this.db.run(SQL_UPDATE, {
+				$id: alarm.id,
+				$hours: alarm.hours,
+				$minutes: alarm.minutes,
+				$days: JSON.stringify(alarm.days)
+			}, function (error) {
+				if (error) {
+					reject({message: 'Could not update alarm.'});
+				} else {
+					resolve(alarm);
+				}
+			});
 		}.bind(this));
 	},
 
@@ -110,6 +128,19 @@ _.merge(Alarms.prototype, {
 		} else if (!_.isArray(alarm.days) || !_.all(alarm.days, _.isNumber)) {
 			throw {message: 'List of integer days required'};
 		}
+	},
+
+	unzip: function (alarm) {
+		alarm.hours = alarm.hours.toString();
+		alarm.minutes = alarm.minutes.toString();
+		if (alarm.hours.length === 1) {
+			alarm.hours = '0' + alarm.hours;
+		}
+		if (alarm.minutes.length === 1) {
+			alarm.minutes = '0' + alarm.minutes;
+		}
+		alarm.days = JSON.parse(alarm.days) || [];
+		return alarm;
 	},
 
 	/**

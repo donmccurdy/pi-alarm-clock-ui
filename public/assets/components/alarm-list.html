@@ -7,8 +7,8 @@
 	<template>
 		<style>
 		</style>
-		<template is="dom-if" if="{{ isEditing }}">
-			<alarm-form alarm-id="{{ editId }}"
+		<template is="dom-if" if="{{ isEditing }}" restamp="true">
+			<alarm-form alarm-id="{{ idEditing }}"
 				resource-url="{{ resourceUrl }}">
 			</alarm-form>
 		</template>
@@ -55,7 +55,7 @@
 		},
 
 		onFormClose: function () {
-			this.querySelector('iron-ajax').generateRequest();
+			this.refresh();
 			this.isEditing = false;
 			this.idEditing = 0;
 		},
@@ -66,12 +66,12 @@
 		},
 
 		onRemove: function (e) {
-			fetch(this.resourceUrl, {
+			var id = e.target.get('alarmId');
+			fetch(this.resourceUrl + '/' + id, {
 				method: 'DELETE',
-				headers: this.resourceHeaders,
-				body: JSON.stringify({id: e.target.get('alarmId')})
+				headers: this.resourceHeaders
 			})
-			.then(function () { e.target.remove(); })
+			.then(this.refresh.bind(this))
 			.catch(console.error.bind(console))
 			;
 		},
@@ -80,6 +80,10 @@
 
 		timeRemaining: function (a, b) {
 			return a.hours > b.hours ? 1 : -1;
+		},
+
+		refresh: function () {
+			this.querySelector('iron-ajax').generateRequest();
 		}
 	});
 </script>

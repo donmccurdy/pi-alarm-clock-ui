@@ -1,6 +1,5 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/iron-input/iron-input.html">
-<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
 
 <dom-module id="alarm-form">
 	<template>
@@ -11,10 +10,10 @@
 		</style>
 		<input is="iron-input" type="time" step="900" value="{{ time::input }}" on-change="_change">
 		<div class="paper-checkbox-group">
-			<label><input type="checkbox" value="0" checked?="{{ containsDay(days.*, 0) }}" on-change="_change">Monday</label>
-			<label><input type="checkbox" value="1" checked?="{{ containsDay(days.*, 1) }}" on-change="_change">Tuesday</label>
-			<label><input type="checkbox" value="2" checked?="{{ containsDay(days.*, 2) }}" on-change="_change">Wednesday</label>
-			<label><input type="checkbox" value="3" checked?="{{ containsDay(days.*, 3) }}" on-change="_change">Thursday</label>
+			<label><input type="checkbox" value="0" checked$="{{ containsDay(days.*, 0) }}" on-change="_change">Monday</label>
+			<label><input type="checkbox" value="1" checked$="{{ containsDay(days.*, 1) }}" on-change="_change">Tuesday</label>
+			<label><input type="checkbox" value="2" checked$="{{ containsDay(days.*, 2) }}" on-change="_change">Wednesday</label>
+			<label><input type="checkbox" value="3" checked$="{{ containsDay(days.*, 3) }}" on-change="_change">Thursday</label>
 			<label><input type="checkbox" value="4" checked$="{{ containsDay(days.*, 4) }}" on-change="_change">Friday</label>
 			<label><input type="checkbox" value="5" checked$="{{ containsDay(days.*, 5) }}" on-change="_change">Saturday</label>
 			<label><input type="checkbox" value="6" checked$="{{ containsDay(days.*, 6) }}" on-change="_change">Sunday</label>
@@ -43,12 +42,10 @@
 		},
 
 		ready: function () {
-			this.reset();
 			if (this.alarmId) {
-				fetch(this.resourceUrl, {
+				fetch(this.getPath(), {
 					method: 'GET',
-					headers: this.resourceHeaders,
-					body: JSON.stringify({id: this.alarmId})
+					headers: this.resourceHeaders
 				})
 				.then(function (response) { return response.json() })
 				.then(function (alarm) {
@@ -71,17 +68,9 @@
 			};
 		},
 
-		reset: function () {
-			this.set('alarmId', 0);
-			this.set('hours', 0);
-			this.set('minutes', 0);
-			this.set('time', '');
-			this.set('days', []);
-		},
-
 		_submit: function () {
-			fetch(this.resourceUrl, {
-				method: 'PUT',
+			fetch(this.getPath(), {
+				method: 'POST',
 				headers: this.resourceHeaders,
 				body: JSON.stringify(this.getData())
 			})
@@ -115,6 +104,13 @@
 
 		containsDay: function (change, index) {
 			return this.days.indexOf(index) >= 0;
+		},
+
+		getPath: function () {
+			if (this.alarmId) {
+				return this.resourceUrl + '/' + this.alarmId;
+			}
+			return this.resourceUrl;
 		}
 	});
 </script>

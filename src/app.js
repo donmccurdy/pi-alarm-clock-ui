@@ -2,7 +2,7 @@ require('dotenv').load();
 
 var koa = require('koala'),
 	serve = require('koa-static'),
-	router = require('koa-route'),
+	routing = require('koa-routing'),
 	routes = require('./routes'),
 	app = koa()
 ;
@@ -10,9 +10,14 @@ var koa = require('koala'),
 app
 	.use(serve('./public'))
 	.use(serve('./bower_components'))
-	.use(router.get('/alarms', routes.list))
-	.use(router.put('/alarms', routes.put))
-	.use(router.del('/alarms', routes.del))
+	.use(routing(app))
+	.route('/alarms')
+		.get(routes.list)
+		.post(routes.post)
+		.nested('/:id')
+			.get(routes.find)
+			.post(routes.post)
+			.delete(routes.del)
 ;
 
 app.listen(app.env.PORT);
